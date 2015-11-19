@@ -1,0 +1,36 @@
+{
+  "name": "hdx-monitor-comments",
+  "version": "0.1.0",
+  "description": "Commenting feature application that supports the HDX Monitor.",
+  "main": "server.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "make tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/luiscape/hdx-monitor-comments"
+  },
+  "keywords": [
+    "comments",
+    "mongodb"
+  ],
+  "author": "Luis Capelo <capelo@un.org>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "1.14.1",
+    "chai": "3.4.1",
+    "chai-http": "1.0.0",
+    "cors": "2.7.1",
+    "express": "4.13.3",
+    "istanbul": "0.4.0",
+    "kerberos": "0.0.17",
+    "mocha": "2.3.4",
+    "moment": "2.10.6",
+    "mongoose": "4.2.6",
+    "morgan": "1.6.1",
+    "should": "7.1.1"
+  }
+}
