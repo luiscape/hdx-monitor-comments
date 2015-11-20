@@ -12,6 +12,15 @@ var expect = require('chai').expect
 chai.use(chaiHttp)
 
 describe('Application routes.', function () {
+  var comment = {
+    'author': 'test',
+    'comment': 'test comment',
+    'dataset': {
+      'id': 'test',
+      'age': 10,
+      'status': 'test'
+    }
+  }
   var application = chai.request('http://localhost:8000')
 
   it('GET [/] should return 200 status.', function (done) {
@@ -26,8 +35,31 @@ describe('Application routes.', function () {
   it('POST [/] should return 200 status.', function (done) {
     application
       .post('/')
+      .send(comment)
       .end(function (err, res) {
         expect(res.status).to.equal(200)
+        comment.id = res.body.record._id
+        done()
+      })
+  })
+
+  it('GET [/ID] should return a comment object.', function (done) {
+    application
+      .get('/test')
+      .end(function (err, res) {
+        expect(res.status).to.equal(200)
+        expect(res.body.success).to.equal(true)
+        done()
+      })
+  })
+
+  it('DELETE [/] should return 200 status.', function (done) {
+    application
+      .delete('/')
+      .send({ 'id': comment.id })
+      .end(function (err, res) {
+        expect(res.status).to.equal(200)
+        expect(res.body.success).to.equal(true)
         done()
       })
   })
