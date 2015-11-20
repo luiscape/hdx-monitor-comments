@@ -7,7 +7,7 @@ var Comment = require('../models/comment')
 var fetchAllComments = function (limit, callback) {
   Comment.find(function (err, data) {
     if (err) {
-      var payload = { 'success': false, 'message': 'Could not collect comments from database.'}
+      var payload = { 'success': false, 'message': 'Could not collect comments from database.' }
       callback(payload)
     } else {
       var out = {

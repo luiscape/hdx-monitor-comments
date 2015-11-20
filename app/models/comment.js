@@ -8,7 +8,7 @@ var Comment = mongoose.Schema({
   dataset: {
     id: { type: String, required: true },
     age: { type: Number, required: true },
-    status: { type: String, required: true}
+    status: { type: String, required: true }
   }
 })
 
