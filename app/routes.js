@@ -2,32 +2,16 @@ module.exports = function (app, config) {
   var http = require('http')
   var moment = require('moment')
 
-  //
-  // Database models.
-  //
+  var Fetch = require('./functions/fetch')
   var Comment = require('./models/comment')
 
-  app.get('/', function (req, res) {
-    //
-    // Check if the user is
-    // trying to create a record.
-    //
-    if (req.body.path) {
-      var payload = { 'success': false, 'message': 'We noticed data in the request. If you are trying to store data, please use a POST request instead.'}
-      res.send(payload)
-    } else {
-      //
-      // Sends all status back.
-      // TODO: set a limit.
-      //
-      Fetch.FetchAllPDF(function (err, data) {
-        if (err) {
-          res.send(err)
-        } else {
-          res.send(data)
-        }
-      })
-    }
+  var commentObject = {
+    'id': null
+  }
+
+  app.param('id', function (req, res, next, data) {
+    commentObject.id = data
+    next()
   })
 
   app.get('/status', function (req, res) {
@@ -40,46 +24,71 @@ module.exports = function (app, config) {
     res.send(payload)
   })
 
+  app.get('/', function (req, res) {
+    //
+    // Check if the user is
+    // trying to create a record.
+    //
+    if (req.body.id) {
+      var payload = {
+        'success': false,
+        'message': 'We noticed data in the request. If you are trying to store data, please use a POST request instead.'
+      }
+      res.send(payload)
+    } else {
+      Fetch.fetchAllComments(20, function (err, data) {
+        if (err) {
+          res.send(err)
+        } else {
+          res.send(data)
+        }
+      })
+    }
+  })
+
+  app.get('/:id', function (req, res) {
+    Fetch.fetchComment(commentObject.id, function (err, data) {
+      if (err) {
+        res.send(err)
+      } else {
+        res.send(data)
+      }
+    })
+  })
+
   app.post('/', function (req, res) {
     //
     // Check that necessary parameters have
     // been provided.
     //
-    console.log('Query: ' + req.body)
-    if (typeof req.body['id'] === undefined || typeof req.body['message'] === undefined) {
+    console.log('Query: ' + JSON.stringify(req.body))
+    if (typeof req.body['id'] === undefined || typeof req.body['comment'] === undefined) {
       var payload = {
         'success': false,
-        'message': 'Parameters are missing. Please provide an id, status, and a message.',
+        'message': 'Parameters are missing. Please provide a dataset id and comment.',
       }
       res.send(payload)
     }
 
     //
-    // Creates new status object.
+    // Creates new comment object.
     //
-    var status = new PDF({
-      'owner': req.body.owner,
-      'bucket': req.body.bucket || 'default',
-      'notes': req.body.notes || null,
-      'private': req.body.private || false,
-      'name': req.body.name,
-      'image': req.body.image || null,
-      'description': req.body.description || null,
-      'favorite': req.body.favorite || false,
-      'priority': req.body.priority || null,
-      'path': req.body.path,
-      'tags': req.body.tags || null,
-      'time': {
-        'created': moment().format()
+    var comment = new Comment({
+      'author': req.body['author'],
+      'comment': req.body['comment'],
+      'dataset': {
+        'id': req.body['id'],
+        'age': req.body['age'],
+        'status': req.body['status']
       }
     }, {
       minimize: false
     })
 
     //
-    // Saves status object in database.
+    // Saves comment object in database.
     //
-    status.save(function (err, data) {
+    comment.save(function (err, data) {
       if (err) {
         console.log(err)
         var payload = {
@@ -103,7 +112,7 @@ module.exports = function (app, config) {
   // from specific node.
   //
   app.delete('/', function (req, res) {
-    PDF.remove({ id: req.body.id }, function (err, data) {
+    Comment.remove({ id: req.body.id }, function (err, data) {
       if (err) {
         var payload = {
           'success': false,
@@ -127,7 +136,7 @@ module.exports = function (app, config) {
   //
   // Any other routes send error.
   //
-  app.use(function (req, res, next) {
+  app.use(function (req, res) {
     res.status(404)
     res.send({ 'success': false, 'message': 'URL not found.'})
   })

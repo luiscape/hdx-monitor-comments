@@ -24,7 +24,7 @@ var fetchAllComments = function (limit, callback) {
 // Fetches a single comment based on id.
 //
 var fetchComment = function (id, callback) {
-  Comment.find({ id: id }, function (err, data) {
+  Comment.find({ 'dataset.id': id }, function (err, data) {
     if (err) {
       var payload = {
         'success': false,

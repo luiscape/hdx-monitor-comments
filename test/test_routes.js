@@ -14,6 +14,24 @@ chai.use(chaiHttp)
 describe('Application routes.', function () {
   var application = chai.request('http://localhost:8000')
 
+  it('GET [/] should return 200 status.', function (done) {
+    application
+      .get('/')
+      .end(function (err, res) {
+        expect(res.status).to.equal(200)
+        done()
+      })
+  })
+
+  it('POST [/] should return 200 status.', function (done) {
+    application
+      .post('/')
+      .end(function (err, res) {
+        expect(res.status).to.equal(200)
+        done()
+      })
+  })
+
   it('GET [/status] should return 200 status.', function (done) {
     application
       .get('/status')
