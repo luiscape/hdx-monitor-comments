@@ -25,30 +25,20 @@ module.exports = function (app, config) {
   })
 
   app.get('/', function (req, res) {
-    //
-    // Check if the user is
-    // trying to create a record.
-    //
-    if (req.body.id) {
-      var payload = {
-        'success': false,
-        'message': 'We noticed data in the request. If you are trying to store data, please use a POST request instead.'
+    Fetch.fetchAllComments(20, function (err, data) {
+      if (err) {
+        res.status(500)
+        res.send(err)
+      } else {
+        res.send(data)
       }
-      res.send(payload)
-    } else {
-      Fetch.fetchAllComments(20, function (err, data) {
-        if (err) {
-          res.send(err)
-        } else {
-          res.send(data)
-        }
-      })
-    }
+    })
   })
 
   app.get('/:id', function (req, res) {
     Fetch.fetchComment(commentObject.id, function (err, data) {
       if (err) {
+        res.status(500)
         res.send(err)
       } else {
         res.send(data)
@@ -61,7 +51,6 @@ module.exports = function (app, config) {
     // Check that necessary parameters have
     // been provided.
     //
-    console.log('Query: ' + JSON.stringify(req.body))
     if (typeof req.body['id'] === undefined || typeof req.body['comment'] === undefined) {
       var payload = {
         'success': false,
@@ -74,16 +63,18 @@ module.exports = function (app, config) {
     // Creates new comment object.
     //
     var comment = new Comment({
-      'author': req.body['author'],
-      'comment': req.body['comment'],
+      'author': req.body.author,
+      'comment': req.body.comment,
       'dataset': {
-        'id': req.body['id'],
-        'age': req.body['age'],
-        'status': req.body['status']
+        'id': req.body.dataset.id,
+        'age': req.body.dataset.age,
+        'status': req.body.dataset.status
       }
     }, {
       minimize: false
     })
+
+    console.log('New comment: ' + comment)
 
     //
     // Saves comment object in database.
@@ -94,13 +85,15 @@ module.exports = function (app, config) {
         var payload = {
           'success': false,
           'message': 'Database error. Failed to store data.',
+          'error': err
         }
+        res.status(500)
         res.send(payload)
       } else {
         var payload = {
           'success': true,
           'message': 'Stored record in database successfully.',
-          'record': data,
+          'record': data
         }
         res.send(payload)
       }
@@ -112,20 +105,19 @@ module.exports = function (app, config) {
   // from specific node.
   //
   app.delete('/', function (req, res) {
-    Comment.remove({ id: req.body.id }, function (err, data) {
+    Comment.remove({ _id: req.body.id }, function (err, data) {
       if (err) {
         var payload = {
           'success': false,
-          'message': 'Failed to remove record from database.',
+          'message': 'Failed to remove comment from database.',
           'error': err,
         }
+        res.status(500)
         res.send(payload)
       } else {
-        var i = 0
         var payload = {
           'success': true,
-          'message': 'All record from node' + req.body.id + ' were removed from database.',
-          'count': i,
+          'message': 'Comment removed.',
           'log': data,
         }
         res.send(payload)
