@@ -5,6 +5,9 @@ node_js:
 services:
   - mongodb
 
+addons:
+  mongodb: "3.0"
+
 install:
  - npm install
  - npm install istanbul
