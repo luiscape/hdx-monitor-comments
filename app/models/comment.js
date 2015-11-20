@@ -2,13 +2,13 @@ var mongoose = require('mongoose')
 
 // define the schema for our user model
 var Comment = mongoose.Schema({
-  author: String,
   time: { type: Date, default: Date.now },
-  comment: String,
+  author: { type: String, required: true },
+  comment: { type: String, required: true },
   dataset: {
-    id: String,
-    age: Number,
-    status: String
+    id: { type: String, required: true },
+    age: { type: Number, required: true },
+    status: { type: String, required: true}
   }
 })
 

@@ -2,6 +2,9 @@ language: node_js
 node_js:
   - "4.2"
 
+services:
+  - mongodb
+
 install:
  - npm install
  - npm install istanbul
@@ -9,6 +12,9 @@ install:
  - npm install -g snazzy
  - npm install -g pm2
  - export COVERALLS_SERVICE_NAME=travis-ci
+
+before_script:
+ - make configure
 
 # run tests + coverage
 script:
