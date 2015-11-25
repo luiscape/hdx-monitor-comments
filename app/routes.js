@@ -51,53 +51,53 @@ module.exports = function (app, config) {
     // Check that necessary parameters have
     // been provided.
     //
-    if (typeof req.body['id'] === undefined || typeof req.body['comment'] === undefined) {
+    if (typeof req.body.dataset.id === 'undefined' || typeof req.body.comment === 'undefined') {
       var payload = {
         'success': false,
         'message': 'Parameters are missing. Please provide a dataset id and comment.',
       }
       res.send(payload)
+    } else {
+      //
+      // Creates new comment object.
+      //
+      var comment = new Comment({
+        'author': req.body.author,
+        'comment': req.body.comment,
+        'dataset': {
+          'id': req.body.dataset.id,
+          'age': req.body.dataset.age,
+          'status': req.body.dataset.status
+        }
+      }, {
+        minimize: false
+      })
+
+      console.log('New comment: ' + comment)
+
+      //
+      // Saves comment object in database.
+      //
+      comment.save(function (err, data) {
+        if (err) {
+          console.log(err)
+          var payload = {
+            'success': false,
+            'message': 'Database error. Failed to store data.',
+            'error': err
+          }
+          res.status(500)
+          res.send(payload)
+        } else {
+          var payload = {
+            'success': true,
+            'message': 'Stored record in database successfully.',
+            'record': data
+          }
+          res.send(payload)
+        }
+      })
     }
-
-    //
-    // Creates new comment object.
-    //
-    var comment = new Comment({
-      'author': req.body.author,
-      'comment': req.body.comment,
-      'dataset': {
-        'id': req.body.dataset.id,
-        'age': req.body.dataset.age,
-        'status': req.body.dataset.status
-      }
-    }, {
-      minimize: false
-    })
-
-    console.log('New comment: ' + comment)
-
-    //
-    // Saves comment object in database.
-    //
-    comment.save(function (err, data) {
-      if (err) {
-        console.log(err)
-        var payload = {
-          'success': false,
-          'message': 'Database error. Failed to store data.',
-          'error': err
-        }
-        res.status(500)
-        res.send(payload)
-      } else {
-        var payload = {
-          'success': true,
-          'message': 'Stored record in database successfully.',
-          'record': data
-        }
-        res.send(payload)
-      }
-    })
   })
 
   //
