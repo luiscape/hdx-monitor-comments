@@ -1,6 +1,6 @@
 {
   "name": "hdx-monitor-comments",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Commenting feature application that supports the HDX Monitor.",
   "main": "server.js",
   "directories": {
@@ -32,5 +32,14 @@
     "mongoose": "4.2.6",
     "morgan": "1.6.1",
     "should": "7.1.1"
+  },
+  "devDependencies": {
+    "ghooks": "1.0.1"
+  },
+  "config": {
+    "ghooks": {
+      "pre-commit": "make standard",
+      "pre-push": "make test"
+    }
   }
 }
